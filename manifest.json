@@ -1,0 +1,23 @@
+{
+  "name": "Global Disaster Monitor PWA",
+  "short_name": "DisasterPWA",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#05050a",
+  "theme_color": "#0b1329",
+  "description": "Pantau bencana alam global secara real-time menggunakan data GDACS.",
+  "icons": [
+    {
+      "src": "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=512&h=512&fit=crop",
+      "sizes": "512x512",
+      "type": "image/jpeg",
+      "purpose": "any"
+    },
+    {
+      "src": "https://api.dicebear.com/7.x/bottts/svg?seed=GDM",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ]
+}
