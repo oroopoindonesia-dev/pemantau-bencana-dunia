@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Global Disaster Monitor</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0b1329">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <script src="//unpkg.com/globe.gl"></script>
+
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #05050a; }
+        /* Efek Kaca Transparan (Glassmorphism) */
+        .glass-panel {
+            background: rgba(15, 23, 42, 0.45);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        /* Kustomisasi Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
+    </style>
+</head>
+<body class="text-slate-100 min-h-screen overflow-hidden relative">
+
+    <div id="globeViz" class="absolute inset-0 z-0"></div>
+
+    <div class="absolute inset-0 z-10 flex flex-col justify-between p-4 pointer-events-none">
+        
+        <header class="w-full glass-panel rounded-2xl p-4 flex justify-between items-center pointer-events-auto shadow-2xl">
+            <div class="flex items-center gap-3">
+                <div class="text-2xl">🌐</div>
+                <div>
+                    <h1 class="text-xl font-bold tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-300">GDM</h1>
+                    <p class="text-xs text-slate-400">GLOBAL DISASTER MONITOR <span class="text-[10px] text-slate-500">(GDACS API)</span></p>
+                </div>
+            </div>
+            
+            <div class="flex items-center gap-3">
+                <button id="btnInstall" class="hidden bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white font-semibold py-2 px-4 rounded-xl transition-all shadow-[0_0_15px_rgba(16,185,129,0.4)] text-sm flex items-center gap-2 animate-pulse">
+                    📥 INSTAL APLIKASI
+                </button>
+                <button id="btnRefresh" class="bg-slate-800/80 hover:bg-slate-700 text-slate-300 px-4 py-2 rounded-xl text-sm transition border border-slate-700 flex items-center gap-1">
+                    🔄 Refresh
+                </button>
+            </div>
+        </header>
+
+        <div class="w-full flex-1 flex justify-between gap-6 my-4 overflow-hidden items-stretch">
+            
+            <section class="w-80 glass-panel rounded-2xl p-4 flex flex-col pointer-events-auto shadow-2xl">
+                <div class="flex justify-between items-center mb-4 border-b border-slate-800 pb-2">
+                    <h2 class="font-bold text-sm tracking-widest text-slate-300 flex items-center gap-2">
+                        <span class="w-2 h-2 rounded-full bg-red-500 animate-ping"></span> PERINGATAN LIVE
+                    </h2>
+                    <span class="text-slate-500 text-xs">•••</span>
+                </div>
+                
+                <div id="alertList" class="flex-1 overflow-y-auto space-y-3 pr-1">
+                    <p class="text-slate-400 text-xs text-center pt-10">Memuat data...</p>
+                </div>
+            </section>
+
+            <section class="w-80 glass-panel rounded-2xl p-5 flex flex-col justify-between pointer-events-auto shadow-2xl">
+                <div>
+                    <h2 class="font-bold text-xs tracking-widest text-slate-400 uppercase mb-4">Ringkasan Global</h2>
+                    <div class="mb-4">
+                        <p class="text-slate-400 text-sm">Kejadian Aktif:</p>
+                        <h3 id="totalActive" class="text-4xl font-extrabold text-white mt-1">0</h3>
+                    </div>
+                    
+                    <div class="space-y-3 text-xs">
+                        <div>
+                            <div class="flex justify-between text-slate-400 mb-1"><span>Gempa Bumi</span><span id="count-EQ">0</span></div>
+                            <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden"><div id="bar-EQ" class="bg-red-500 h-full transition-all" style="width: 0%"></div></div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between text-slate-400 mb-1"><span>Banjir</span><span id="count-FL">0</span></div>
+                            <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden"><div id="bar-FL" class="bg-blue-500 h-full transition-all" style="width: 0%"></div></div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between text-slate-400 mb-1"><span>Kebakaran Hutan</span><span id="count-WF">0</span></div>
+                            <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden"><div id="bar-WF" class="bg-orange-500 h-full transition-all" style="width: 0%"></div></div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between text-slate-400 mb-1"><span>Gunung Meletus</span><span id="count-VO">0</span></div>
+                            <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden"><div id="bar-VO" class="bg-amber-500 h-full transition-all" style="width: 0%"></div></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="border-t border-slate-800 pt-3 text-[10px] text-slate-500">
+                    Sumber: <span class="text-slate-400">GDACS API</span> | Diperbarui: <span id="updateTime" class="text-slate-400">Baru Saja</span>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
